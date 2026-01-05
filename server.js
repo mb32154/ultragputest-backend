@@ -11,7 +11,6 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('.')); // سرو فایل‌های استاتیک
 
 // ایجاد و اتصال به پایگاه داده SQLite
 const db = new sqlite3.Database('./database.db', (err) => {
@@ -117,11 +116,13 @@ app.post('/api/save-result', (req, res) => {
         stmt.finalize();
     }
 });
+app.get('/', (req, res) => {
+    res.json({
+        status: 'ok',
+        name: 'Ultra GPU Test API',
+        version: '1.0.0'
+    });
 
-// Route برای دریافت لیست برترین‌ها
-app.get('/api/leaderboard', (req, res) => {
-    const { testName = 'all' } = req.query;
-    
     let query = `
         SELECT u.username, tr.test_name, tr.overall_score, tr.avg_fps, 
                tr.max_fps, tr.min_fps, tr.stability, tr.duration,
@@ -147,7 +148,6 @@ app.get('/api/leaderboard', (req, res) => {
         res.json(rows);
     });
 });
-
 // Route برای دریافت آمار کلی
 app.get('/api/stats', (req, res) => {
     const queries = [
@@ -209,3 +209,4 @@ app.listen(PORT, () => {
     console.log(`Admin panel will be available at http://localhost:${PORT}/admin.html`);
 
 });
+
